@@ -12,12 +12,12 @@ joinExcept (Error e) = Error e
 joinExcept (Success a) = a
 
 joinAnnotated :: Semigroup e => Annotated e (Annotated e a) -> Annotated e a
-joinAnnotated ((a :# e1) :# (e2)) = a :# (e1 <> e2)
+joinAnnotated ((a :# e1) :# e2) = a :# (e1 <> e2)
 
 joinList      :: List (List a) -> List a
 joinList Nil = Nil
 joinList (a :. as) = kConcat a (joinList as)
 
 joinFun       :: Fun i (Fun i a) -> Fun i a
-joinFun (F f) = F $ \i -> case (f i) of 
-  F g -> (g i)
+joinFun (F f) = F $ \i -> case f i of 
+  F g -> g i

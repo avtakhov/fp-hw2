@@ -2,24 +2,22 @@ module HW2.T4 where
 
 import Control.Monad
 import HW2.T1
-import HW2.T2
-import HW2.T3
 import HW2.EXPR
 
 data State s a = S {runS :: s -> Annotated s a}
 
 mapState :: (a -> b) -> State s a -> State s b
-mapState f state = S $ (mapAnnotated f) . (runS state)
+mapState f state = S $ mapAnnotated f . runS state
 
 wrapState :: a -> State s a
 wrapState a = S $ \s -> a :# s
 
 joinState :: State s (State s a) -> State s a
-joinState (S f) = S $ \s -> case (f s) of
+joinState (S f) = S $ \s -> case f s of
   a :# s1 -> runS a s1
 
 modifyState :: (s -> s) -> State s ()
-modifyState f = S $ \s -> () :# (f s)
+modifyState f = S $ \s -> () :# f s
 
 instance Functor (State s) where
   fmap = mapState
@@ -35,12 +33,12 @@ binary :: (Double -> Double -> Double) -> (Double -> Double -> Prim Double) -> E
 binary oper expr a b = do
   x <- eval a
   y <- eval b
-  S $ \s -> (oper x y) :# (expr x y : s)
+  S $ \s -> oper x y :# (expr x y : s)
 
 unary :: (Double -> Double) -> (Double -> Prim Double) -> Expr -> State [Prim Double] Double
 unary oper expr a = do
   x <- eval a
-  S $ \s -> (oper x) :# (expr x: s)
+  S $ \s -> oper x :# (expr x: s)
 
 eval :: Expr -> State [Prim Double] Double
 eval (Val x) = pure x

@@ -2,9 +2,9 @@
 
 module HW2.T6 where
 
-import Control.Applicative (Alternative (empty, (<|>)), many, optional, some)
+import Control.Applicative (Alternative (empty, (<|>)), many, some)
 import Control.Monad (MonadPlus, guard, mfilter, replicateM)
-import Data.Char (digitToInt, isDigit, isSpace, isUpper, ord)
+import Data.Char (digitToInt, isDigit, isSpace)
 import Data.Version
 import HW2.T1 (Annotated ((:#)), Except (Error, Success))
 import HW2.T5
@@ -35,8 +35,8 @@ instance Alternative Parser where
   empty = parseError
   (<|>) (P (ES p)) (P (ES q)) =
     P
-      ( ES $ \s -> case (p s) of
-          Error e -> case (q s) of
+      ( ES $ \s -> case p s of
+          Error e -> case q s of
             Error _ -> Error e
             x -> x
           x -> x
@@ -44,7 +44,7 @@ instance Alternative Parser where
 
 pNot :: Parser a -> Parser ()
 pNot (P (ES f)) = P $
-  ES $ \(pos, s) -> case (f (pos, s)) of
+  ES $ \(pos, s) -> case f (pos, s) of
     Error _ -> Success (() :# (pos, s))
     Success _ -> Error (ErrorAtPos pos)
 
@@ -69,20 +69,20 @@ pExpect c = do
 pExpectPredicate :: (Char -> Bool) -> Parser Char
 pExpectPredicate p = do
   x <- pChar
-  P $ ES $ \(pos, s) -> if (p x) then Success (x :# (pos, s)) else Error $ ErrorAtPos pos
+  P $ ES $ \(pos, s) -> if p x then Success (x :# (pos, s)) else Error $ ErrorAtPos pos
 
 pOneUnsigned :: Parser Int
 pOneUnsigned = do
-  x <- (pExpectPredicate Data.Char.isDigit)
+  x <- pExpectPredicate Data.Char.isDigit
   pure (Data.Char.digitToInt x)
 
 listToDouble :: [Int] -> Double
 listToDouble [] = 0
-listToDouble (x : xs) = (fromIntegral x) + 10 * (listToDouble xs)
+listToDouble (x : xs) = fromIntegral x + 10 * listToDouble xs
 
 listToSmallDouble :: [Int] -> Double
 listToSmallDouble [] = 0
-listToSmallDouble (x : xs) = (fromIntegral x) / 10 + (listToSmallDouble xs) / 10
+listToSmallDouble (x : xs) = fromIntegral x / 10 + listToSmallDouble xs / 10
 
 pInt :: Parser Double
 pInt = fmap (listToDouble . reverse) (some pOneUnsigned)
@@ -116,9 +116,7 @@ pOper :: (Char -> Maybe (Expr -> Expr -> Expr)) -> Parser (Expr -> Expr -> Expr)
 pOper conv = do
   pWs
   x <- fmap conv pChar
-  case x of
-    Just t -> pure t
-    Nothing -> empty
+  maybe empty pure x
 
 pLevel :: Parser Expr -> (Char -> Maybe (Expr -> Expr -> Expr)) -> Parser Expr
 pLevel nextLevel charToOp = do
@@ -130,7 +128,7 @@ pLevel nextLevel charToOp = do
           y <- nextLevel <|> pExpression
           pure (`f` y)
       )
-  pure (foldl (\a -> \f -> f a) x li)
+  pure (foldl (\a f -> f a) x li)
 
 pSubAdd :: Parser Expr
 pSubAdd = pLevel pMulDiv charToSubAdd
