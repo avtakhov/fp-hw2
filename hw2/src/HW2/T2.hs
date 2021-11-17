@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module HW2.T2 where
 
 import HW2.T1
@@ -38,16 +40,16 @@ distPrioritised (Medium a, Low b) = Medium (a, b)
 
 distPrioritised (Low a, Low b) = Low (a, b)
 
-distStream (a :> as, b :> bs) = (a, b) :> distStream (as, bs)
+distStream (a :> as, b :> bs) = (a, b) :> (distStream (as, bs))
 
 getList :: a -> List b -> List (a, b)
 getList _ Nil = Nil
-getList a (x :. xs) = (a, x) :. getList a xs
+getList a (x :. xs) = (a, x) :. (getList a xs)
 
 kConcat:: List a -> List a -> List a
 kConcat a Nil  = a
 kConcat Nil a = a
-kConcat (a :. as) bs = a :. kConcat as bs
+kConcat (a :. as) bs = (a :. kConcat as bs)
 
 distList (Nil, _) = Nil
 distList (_, Nil) = Nil
@@ -74,7 +76,10 @@ wrapPrioritised :: a -> Prioritised a
 wrapPrioritised = Low
 
 wrapStream      :: a -> Stream a
-wrapStream a = a :> wrapStream a
+wrapStream a = a :> (wrapStream a)
 
 wrapList        :: a -> List a
 wrapList a = a :. Nil
+
+wrapFun         :: a -> Fun i a
+wrapFun a = F (const a)
