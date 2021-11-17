@@ -8,7 +8,6 @@ import Data.Char (digitToInt, isDigit, isSpace)
 import HW2.T1 (Annotated ((:#)), Except (Error, Success))
 import HW2.T5
 import Numeric.Natural
-import HW2.EXPR
 
 data ParseError = ErrorAtPos Natural deriving (Show)
 
