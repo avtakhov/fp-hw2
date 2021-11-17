@@ -5,7 +5,6 @@ module HW2.T6 where
 import Control.Applicative (Alternative (empty, (<|>)), many, some)
 import Control.Monad (MonadPlus, guard, mfilter, replicateM)
 import Data.Char (digitToInt, isDigit, isSpace)
-import Data.Version
 import HW2.T1 (Annotated ((:#)), Except (Error, Success))
 import HW2.T5
 import Numeric.Natural
