@@ -1,5 +1,14 @@
-module HW2.T5 where
-
+module HW2.T5
+  (
+    EvaluationError (..)
+  , ExceptState (..)
+  , eval
+  , joinExceptState
+  , mapExceptState
+  , modifyExceptState
+  , wrapExceptState
+  ) where
+    
 import Control.Monad
 import HW2.T1
 
@@ -21,7 +30,7 @@ instance Num Expr where
   abs x = Op (Abs x)
   signum x = Op (Sgn x)
   fromInteger x = Val (fromInteger x)
-  
+
 instance Fractional Expr where
   x / y = Op (Div x y)
   fromRational x = Val (fromRational x)
