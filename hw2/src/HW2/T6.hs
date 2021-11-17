@@ -7,7 +7,8 @@ import Control.Monad (MonadPlus, guard, mfilter, replicateM)
 import Data.Char (digitToInt, isDigit, isSpace)
 import HW2.T1 (Annotated ((:#)), Except (Error, Success))
 import Numeric.Natural
-import HW2.T5 (Expr(..), ExceptState(..))
+import HW2.T4 (Expr(..))
+import HW2.T5 (ExceptState(..))
 
 data ParseError = ErrorAtPos Natural deriving (Show)
 
