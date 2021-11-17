@@ -7,8 +7,9 @@ module HW2.T5
   , mapExceptState
   , modifyExceptState
   , wrapExceptState
+  , Expr(..)
   ) where
-    
+
 import Control.Monad
 import HW2.T1
 

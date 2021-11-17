@@ -6,8 +6,8 @@ import Control.Applicative (Alternative (empty, (<|>)), many, some)
 import Control.Monad (MonadPlus, guard, mfilter, replicateM)
 import Data.Char (digitToInt, isDigit, isSpace)
 import HW2.T1 (Annotated ((:#)), Except (Error, Success))
-import HW2.T5
 import Numeric.Natural
+import HW2.T5 (Expr(..), ExceptState(..))
 
 data ParseError = ErrorAtPos Natural deriving (Show)
 
